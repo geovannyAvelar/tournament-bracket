@@ -1,0 +1,241 @@
+swagger: "2.0"
+info:
+  description: Tournament bracket generator API
+  version: "0.0.1"
+  title: Tournament bracket generator
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/api"
+
+paths:
+  /tournament:
+    get:
+      operationId: "tournament.read_all"
+      tags:
+        - "Tournament"
+      summary: "Tournament data structure"
+      description: "Read a list of tournaments"
+      responses:
+        200:
+          description: "Successful read tournament list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                name:
+                  type: "string"
+    post:
+      operationId: "tournament.create"
+      tags:
+        - "Tournament"
+      summary: "Tournament data structure"
+      description: "Create a new tournament"
+      parameters:
+        - name: tournament
+          in: body
+          description: "Tournament to create"
+          required: True
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Tournament name"
+      responses:
+        201:
+          description: "Successfully created tournament"
+          schema:
+            properties:
+              id:
+                type: string
+                description: "Tournament id"
+              name:
+                type: string
+                description: "Tournament name"
+  /tournament/{tournament_id}:
+    get:
+      operationId: "tournament.read_one"
+      tags:
+        - "Tournament"
+      summary: Read one tournament
+      description: Read one tournament
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of tournament to get
+          type: integer
+          required: True
+      responses:
+        200:
+          description: "Successfully read tournament"
+          schema:
+            type: object
+            properties:
+              tournament_id:
+                type: string
+                description: "Id of tournament"
+  /tournament/{tournament_id}/competitor:
+    post:
+      operationId: "tournament.create_competitor"
+      tags:
+        - "Tournament"
+        - "Competitor"
+      summary: Create a competitor
+      description: Create a competitor
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of tournament
+          type: integer
+          required: True
+        - name: competitor
+          in: body
+          description: "Competitor to create"
+          required: True
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Competitor name"
+      responses:
+        201:
+          description: "Successfully created competitor"
+          schema:
+            type: object
+            properties:
+              competitor_id:
+                type: integer
+                description: ID of competitor
+              name:
+                type: string
+                description: Competitor name
+  /tournament/{tournament_id}/match:
+    get:
+      operationId: "tournament.read_matches"
+      tags:
+        - "Tournament"
+        - "Match"
+      summary: List all matches of a tournament
+      description: List all matches of a tournament
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of a tournament
+          type: integer
+          required: True
+      responses:
+        200:
+          description: "Successfully read matches"
+          schema:
+            type: object
+            properties:
+              match_id:
+                type: integer
+                description: Match id
+              home:
+                type: object
+                properties:
+                  competitor_id:
+                    type: integer
+                    description: Home competitor ID
+                  name:
+                    type: string
+                    description: Home competitor name
+              guest:
+                type: object
+                properties:
+                  competitor_id:
+                    type: integer
+                    description: Guest competitor ID
+                  name:
+                    type: string
+                    description: Guest competitor name
+  /tournament/{tournament_id}/draw_first_fixture:
+    put:
+      operationId: "tournament.draw_first_fixture"
+      tags:
+        - "Tournament"
+      summary: Generate matches to first fixture
+      description: Generate matches to first fixture
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of a tournament
+          type: integer
+          required: True
+      responses:
+        200:
+          description: "First fixture matches successfully generated"
+  /tournament/{tournament_id}/match/{match_id}:
+    post:
+      operationId: "tournament.set_match_result"
+      tags:
+        - "Tournament"
+        - "Match"
+      summary: Set a match result
+      description: Set a match result
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of a tournament
+          type: integer
+          required: True
+        - name: match_id
+          in: path
+          description: ID of match
+          type: integer
+          required: True
+        - name: result
+          in: body
+          description: Result of the match
+          required: True
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Result of the match (HOME_VICTORY or GUEST_VICTORY)"
+      responses:
+        201:
+          description: "Match result successfully defined"
+  /tournament/{tournament_id}/calculate_results/{fixture}:
+    put:
+      operationId: "tournament.calculate_results"
+      tags:
+        - "Tournament"
+      summary: Check matches results and create another matches with winners
+      description: Check matches results and create another matches with winners
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of a tournament
+          type: integer
+          required: True
+        - name: fixture
+          in: path
+          description: Fixture to calculate results
+          type: integer
+          required: True
+      responses:
+        201:
+          description: "New fixture created"
+  /tournament/{tournament_id}/calculate_top_4:
+    get:
+      operationId: "tournament.calculate_top_4"
+      tags:
+        - "Tournament"
+      summary: Get tournament top 4
+      description: Get tournament top 4
+      parameters:
+        - name: tournament_id
+          in: path
+          description: ID of a tournament
+          type: integer
+          required: True
+      responses:
+        200:
+          description: "TOP 4 successfully calculated"
